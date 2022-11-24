@@ -5,6 +5,7 @@ const express = require('express');
 const cacheRoutes = require('./routes/cacheRoutes');
 const dao = require('./dao/cacheDB');
 const logger = require('./utils/logger');
+const errorHandler = require('./middleware/errorHandler');
 
 dao.connectToDB()
   .then(() => {
@@ -13,6 +14,7 @@ dao.connectToDB()
     app.use(express.json());
     app.use(express.urlencoded());
     app.use('/cache', cacheRoutes);
+    app.use(errorHandler);
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, (err) => {

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const logger = require('../utils/logger');
 const CacheItem = require('../models/cacheItem');
+const RequestError = require('../exceptions/requestError');
 
 const connectToDB = () => (
   mongoose.connect(process.env.MONGODB_URI, {
@@ -23,7 +24,7 @@ const getOrCreateItem = async (req) => {
       logger.info(`Cache hit: ${key}`);
     }
   } catch (error) {
-    console.log('process error');
+    throw new RequestError(500, 'Update cache item error');
   }
 
   if (!result) {
@@ -51,7 +52,7 @@ const getOrCreateItem = async (req) => {
         }
       );
     } catch (error) {
-      console.log('process error');
+      throw new RequestError(500, 'Create cache item error');
     }
   }
 
@@ -60,9 +61,10 @@ const getOrCreateItem = async (req) => {
 
 const updateItem = async (req) => {
   const { key } = req.params;
-  const { value } = req.body;
 
   try {
+    const { value } = req.body;
+
     if (!value) {
       return {
         code: 400,
@@ -84,7 +86,7 @@ const updateItem = async (req) => {
 
     return updated;
   } catch (error) {
-    console.log('process error');
+    throw new RequestError(500, 'Update cache item error');
   }
 };
 
@@ -92,7 +94,7 @@ const getAllItems = async () => {
   try {
     return await CacheItem.find().sort({ createdAt: -1 });
   } catch (error) {
-    console.log('process error');
+    throw new RequestError(500, 'Get all cache items error');
   }
 };
 
@@ -112,7 +114,7 @@ const deleteItem = async (req) => {
       message: `Item deleted for key: ${key}`
     };
   } catch (error) {
-    console.log('process error');
+    throw new RequestError(500, 'Delete cache item error');
   }
 };
 
@@ -123,7 +125,7 @@ const deleteAllItems = async () => {
       message: 'All cache items deleted'
     };
   } catch (error) {
-    console.log('process error');
+    throw new RequestError(500, 'Delete all cache items error');
   }
 };
 
