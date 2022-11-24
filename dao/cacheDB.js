@@ -102,7 +102,7 @@ const deleteItem = async (req) => {
   const { key } = req.params;
 
   try {
-    const deleted = await CacheItem.findOneAndDelete({ keyqwe: 'asas' });
+    const deleted = await CacheItem.findOneAndDelete({ key });
     if (!deleted) {
       return {
         code: 404,
