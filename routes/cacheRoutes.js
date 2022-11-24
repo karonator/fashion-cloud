@@ -2,14 +2,26 @@ const express = require('express');
 
 const router = express.Router();
 
+const dao = require('../dao/cacheDB');
+
 // GET
 
-router.get('/:key', async (req, res) => {
-  res.send(`get cache item with key ${req.params.key}`);
+router.get('/:key', async (req, res, next) => {
+  try {
+    const items = await dao.getOrCreateItem(req);
+    res.json(items);
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get('/', async (req, res) => {
-  res.send('get all cache items');
+router.get('/', async (req, res, next) => {
+  try {
+    const items = await dao.getAllItems();
+    res.json(items);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // POST

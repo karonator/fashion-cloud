@@ -4,6 +4,7 @@ const express = require('express');
 
 const cacheRoutes = require('./routes/cacheRoutes');
 const dao = require('./dao/cacheDB');
+const logger = require('./utils/logger');
 
 dao.connectToDB()
   .then(() => {
@@ -14,13 +15,13 @@ dao.connectToDB()
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, (err) => {
       if (err) {
-        // add logger later ...
-        console.log('Server startup failed');
+        logger.error('Express server startup failed');
       } else {
-        console.log(`Server listening on port ${PORT}`);
+        logger.info(`Server listening on port ${PORT}`);
       }
     });
   })
   .catch(() => {
-    console.log('db connection not ok');
+    logger.error('MongoDB connection failed');
+    logger.error('Server startup terminated');
   });
