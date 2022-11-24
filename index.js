@@ -2,16 +2,25 @@ require('dotenv').config();
 
 const express = require('express');
 
-const app = express();
+const cacheRoutes = require('./routes/cacheRoutes');
+const dao = require('./dao/cacheDB');
 
-app.use('/cache', require('./routes/cacheRoutes'));
+dao.connectToDB()
+  .then(() => {
+    const app = express();
 
-const PORT = process.env.PORT || 3000;
+    app.use('/cache', cacheRoutes);
 
-app.listen(PORT, (err) => {
-  if (err) {
-    console.log('Server startup failed');
-  } else {
-    console.log(`Server listening on port ${PORT}`);
-  }
-});
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, (err) => {
+      if (err) {
+        // add logger later ...
+        console.log('Server startup failed');
+      } else {
+        console.log(`Server listening on port ${PORT}`);
+      }
+    });
+  })
+  .catch(() => {
+    console.log('db connection not ok');
+  });
