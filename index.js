@@ -10,6 +10,8 @@ dao.connectToDB()
   .then(() => {
     const app = express();
 
+    app.use(express.json());
+    app.use(express.urlencoded());
     app.use('/cache', cacheRoutes);
 
     const PORT = process.env.PORT || 3000;

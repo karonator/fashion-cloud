@@ -8,6 +8,8 @@ const cacheItemSchema = new mongoose.Schema({
     expires: `${process.env.TTL || 5}sec`,
     default: Date.now
   }
+}, {
+  collection: 'cache'
 });
 
 module.exports = mongoose.model('CacheItem', cacheItemSchema);

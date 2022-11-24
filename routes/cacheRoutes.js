@@ -8,8 +8,7 @@ const dao = require('../dao/cacheDB');
 
 router.get('/:key', async (req, res, next) => {
   try {
-    const items = await dao.getOrCreateItem(req);
-    res.json(items);
+    res.json(await dao.getOrCreateItem(req));
   } catch (error) {
     next(error);
   }
@@ -17,8 +16,7 @@ router.get('/:key', async (req, res, next) => {
 
 router.get('/', async (req, res, next) => {
   try {
-    const items = await dao.getAllItems();
-    res.json(items);
+    res.json(await dao.getAllItems());
   } catch (error) {
     next(error);
   }
@@ -26,24 +24,47 @@ router.get('/', async (req, res, next) => {
 
 // POST
 
-router.post('/:key', async (req, res) => {
-  res.send(`create cache item with key ${req.params.key}`);
+router.post('/:key', async (req, res, next) => {
+  try {
+    res.json(await dao.getOrCreateItem(req));
+  } catch (error) {
+    next(error);
+  }
 });
 
 // UPDATE
 
-router.put('/:key', (req, res) => {
-  res.send(`update cache item with key ${req.params.key}`);
+router.put('/:key', async (req, res, next) => {
+  try {
+    const result = await dao.updateItem(req);
+    if ('code' in result) {
+      const { code, value } = result;
+      res.status(code).json({ message: value });
+    } else {
+      res.json(result);
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 // DELETE
 
-router.delete('/:key', (req, res) => {
-  res.send(`delete cache item with key ${req.params.key}`);
+router.delete('/:key', async (req, res, next) => {
+  try {
+    const { code, message } = await dao.deleteItem(req);
+    res.status(code).json({ message });
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.delete('/', (req, res) => {
-  res.send('delete all cache items');
+router.delete('/', async (req, res, next) => {
+  try {
+    res.json(await dao.deleteAllItems());
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
